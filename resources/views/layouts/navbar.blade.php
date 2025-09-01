@@ -34,10 +34,9 @@
             <div class="d-flex align-items-center">
                 <div class="nxl-h-item d-none d-sm-flex">
                     <div class="full-screen-switcher">
-                        <a href="javascript:void(0);" class="nxl-head-link me-0"
-                            onclick="$('body').fullScreenHelper('toggle');">
+                        <a href="javascript:void(0);" class="nxl-head-link me-0" id="fullscreen-toggle">
                             <i class="feather-maximize maximize"></i>
-                            <i class="feather-minimize minimize"></i>
+                            <i class="feather-minimize minimize" style="display: none;"></i>
                         </a>
                     </div>
                 </div>
@@ -51,12 +50,12 @@
                 </div>
                 <div class="dropdown nxl-h-item">
                     <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button" data-bs-auto-close="outside">
-                        <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name={{ auth()->user() ? auth()->user()->name : 'Guest' }}" alt="user-image" class="img-fluid user-avtar me-0" />
+                        <img src="https://ui-avatars.com/api/?background=c3b17f&color=fff&name={{ auth()->user() ? auth()->user()->name : 'Guest' }}" alt="user-image" class="img-fluid user-avtar me-0" />
                     </a>
                     <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown">
                         <div class="dropdown-header">
                             <div class="d-flex align-items-center">
-                                <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name={{ auth()->user() ? auth()->user()->name : 'Guest' }}" alt="user-image" class="img-fluid user-avtar" />
+                                <img src="https://ui-avatars.com/api/?background=c3b17f&color=fff&name={{ auth()->user() ? auth()->user()->name : 'Guest' }}" alt="user-image" class="img-fluid user-avtar" />
                                 <div>
                                     <h6 class="mb-0 text-dark">{{ auth()->user() ? auth()->user()->name : 'Guest' }}</h6>
                                     <span class="fs-12 fw-medium text-muted">{{ auth()->user() ? auth()->user()->email : 'guest@example.com' }}</span>

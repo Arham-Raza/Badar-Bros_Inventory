@@ -1,5 +1,6 @@
 @extends('layouts.master')
 @section('content')
+<main class="nxl-container">
     <h4 class="py-3 mb-4">Account</h4>
 
     <div class="row">
@@ -113,4 +114,5 @@
             </div>
         </div>
     </div>
+</main>
 @endsection

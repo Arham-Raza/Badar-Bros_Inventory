@@ -1,0 +1,470 @@
+@extends('layouts.master')
+
+@section('content')
+    <main class="nxl-container">
+        <div class="nxl-content">
+            <div class="page-header">
+                <div class="page-header-left d-flex align-items-center">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">Purchases</h5>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url('dashboard') }}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('purchases.index') }}">Purchases</a></li>
+                        <li class="breadcrumb-item">Create</li>
+                    </ul>
+                </div>
+                <div class="page-header-right ms-auto">
+                    <div class="page-header-right-items">
+                        <a href="{{ route('purchases.index') }}" class="d-flex align-items-center">
+                            <i class="feather-arrow-left me-2"></i>
+                            <span>Back</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form class="card-body" method="POST" action="{{ route('purchases.update', $purchase->id) }}">
+                            @csrf
+                            @method('PUT')
+                            <div class="card stretch stretch-full">
+                                <div class="card-body lead-status">
+                                    <div class="mb-0 d-flex align-items-center justify-content-between">
+                                        <h5 class="mb-0 fw-bold me-4">
+                                            <span class="mb-2 d-block">Add Purchase :</span>
+                                        </h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="my-2 col-md-3">
+                                            <label class="fw-semibold">Vendor:</label>
+                                            <select data-select2-selector="status" name="vendor_id" class="form-control"
+                                                required>
+                                                <option value="">Select Vendor</option>
+                                                <option value="">Select Vendor</option>
+                                                @foreach ($vendors as $id => $name)
+                                                    <option data-bg="bg-primary" value="{{ $id }}"
+                                                        {{ $purchase->vendor_id == $id ? 'selected' : '' }}>
+                                                        {{ $name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="my-2 col-md-3">
+                                            <label class="fw-semibold">Transaction #:</label>
+                                            <input type="text" readonly value="{{ $purchase->transaction_no }}"
+                                                name="transaction_no" class="form-control" required>
+                                        </div>
+                                        <div class="my-2 col-md-3">
+                                            <label class="fw-semibold">Transaction Date:</label>
+                                            <input type="date" name="transaction_date" class="form-control" required
+                                                value="{{ $purchase->transaction_date ? date('Y-m-d', strtotime($purchase->transaction_date)) : date('Y-m-d') }}">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <h5 class="mb-2">Purchase Details</h5>
+                                    <!-- Purchase Details Table -->
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="purchaseDetailsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Weapon No</th>
+                                                    <th>Category</th>
+                                                    <th>Make</th>
+                                                    <th>Rate</th>
+                                                    <th>Quantity</th>
+                                                    <th>Amount</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($purchase->details as $idx => $detail)
+                                                    <tr>
+                                                        <td>
+                                                            @php
+                                                                $product = $products
+                                                                    ->where('id', $detail->product_id)
+                                                                    ->first();
+                                                            @endphp
+                                                            {{ $product->name ?? '' }}
+                                                            <input type="hidden"
+                                                                name="products[{{ $idx }}][name]"
+                                                                value="{{ $product->name }}">
+                                                        </td>
+                                                        <td>
+                                                            {{ $product->weapon_no }}
+                                                            <input type="hidden"
+                                                                name="products[{{ $idx }}][weapon_no]"
+                                                                value="{{ $product->weapon_no }}">
+                                                        </td>
+                                                        <td>
+                                                            {{ $product->category->name ?? '' }}
+                                                            <input type="hidden"
+                                                                name="products[{{ $idx }}][category_id]"
+                                                                value="{{ $product->category_id }}">
+                                                        </td>
+                                                        <td>
+                                                            {{ $product->make->name ?? '' }}
+                                                            <input type="hidden"
+                                                                name="products[{{ $idx }}][make_id]"
+                                                                value="{{ $product->make_id }}">
+                                                        </td>
+                                                        <td>
+                                                            {{ $detail->rate }}
+                                                            <input type="hidden"
+                                                                name="products[{{ $idx }}][rate]"
+                                                                value="{{ $detail->rate }}">
+                                                        </td>
+                                                        <td>
+                                                            {{ $detail->quantity }}
+                                                            <input type="hidden"
+                                                                name="products[{{ $idx }}][quantity]"
+                                                                value="{{ $detail->quantity }}">
+                                                        </td>
+                                                        <td>
+                                                            {{ $detail->amount }}
+                                                            <input type="hidden"
+                                                                name="products[{{ $idx }}][amount]"
+                                                                value="{{ $detail->amount }}">
+                                                        </td>
+                                                        <td><button type="button"
+                                                                class="btn btn-danger btn-sm remove-product">Remove</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button type="button" class="mt-2 btn btn-secondary" data-bs-toggle="modal"
+                                        data-bs-target="#productModal">Add
+                                        Product</button>
+                                    <hr>
+                                    <h5 class="mb-2">Amount Details</h5>
+                                    <div class="row">
+                                        <div class="my-2 col-md-2">
+                                            <label class="fw-semibold">Gross Amount:</label>
+                                            <input readonly type="number" min="0" step="0.01" name="gross_amount"
+                                                class="form-control" required value="{{ $purchase->gross_amount }}">
+                                        </div>
+                                        <div class="my-2 col-md-2">
+                                            <label class="fw-semibold">Discount %:</label>
+                                            <input type="number" min="0" step="0.01" name="discount_percentage"
+                                                class="form-control" value="{{ $purchase->discount_percentage }}">
+                                        </div>
+                                        <div class="my-2 col-md-2">
+                                            <label class="fw-semibold">Discount Amount:</label>
+                                            <input type="number" min="0" step="0.01" name="discount_amount"
+                                                class="form-control" value="{{ $purchase->discount_amount }}">
+                                        </div>
+                                        <div class="my-2 col-md-2">
+                                            <label class="fw-semibold">Tax %:</label>
+                                            <input type="number" min="0" step="0.01" name="tax_percentage"
+                                                class="form-control" value="{{ $purchase->tax_percentage }}">
+                                        </div>
+                                        <div class="my-2 col-md-2">
+                                            <label class="fw-semibold">Tax Amount:</label>
+                                            <input type="number" min="0" step="0.01" name="tax_amount"
+                                                class="form-control" value="{{ $purchase->tax_amount }}">
+                                        </div>
+                                        <div class="my-2 col-md-2">
+                                            <label class="fw-semibold">Net Amount:</label>
+                                            <input readonly type="number" min="0" step="0.01"
+                                                name="net_amount" class="form-control"
+                                                value="{{ $purchase->net_amount }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button type="submit" class="ms-auto btn btn-primary">Update</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="modal fade-scale" id="productModal" tabindex="-1" aria-labelledby="productModal" aria-hidden="true"
+        data-bs-dismiss="modal">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <!--! BEGIN: [modal-header] !-->
+                <form id="productForm">
+                    <div class="modal-header">
+                        <h2 class="mb-0 d-flex flex-column">
+                            <span class="mb-1 fs-18 fw-bold">Add Product</span>
+                        </h2>
+                    </div>
+                    <!--! BEGIN: [modal-body] !-->
+                    <div class=" modal-body">
+                        {{-- <div class="mb-3">
+                            <label class="form-label">Product</label>
+                            <select id="modalProduct" data-select2-selector="status" class="form-control" required>
+                                <option value="">Select Product</option>
+                                @foreach ($products as $product)
+                                    <option data-bg="bg-primary" data-name="{{ $product->name }}"
+                                        value="{{ $product->id }}">{{ $product->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div> --}}
+                        <div class="row">
+                            <div class="my-2 col-md-6">
+                                <label for="nameInput" class="fw-semibold">Name: </label>
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="feather-tag"></i></div>
+                                    <input type="text" name="name" class="form-control" id="name"
+                                        placeholder="Product Name" required>
+                                </div>
+                            </div>
+                            <div class="my-2 col-md-6">
+                                <label for="nameInput" class="fw-semibold">Weapon No: </label>
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="feather-tag"></i></div>
+                                    <input type="text" name="weapon_no" class="form-control" id="weapon_no"
+                                        placeholder="Weapon No" required>
+                                </div>
+                            </div>
+                            <div class="my-2 col-md-6">
+                                <label for="categoryInput" class="fw-semibold">Category: </label>
+                                <select name="category_id" class="form-control" data-select2-selector="status"
+                                    id="categoryInput" required>
+                                    @foreach ($categories as $id => $name)
+                                        <option data-bg="bg-primary" data-name="{{ $name }}"
+                                            value="{{ $id }}">{{ $name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="my-2 col-md-6">
+                                <label for="makeInput" class="fw-semibold">Make: </label>
+                                <select name="make_id" class="form-control" data-select2-selector="status"
+                                    id="makeInput" required>
+                                    @foreach ($makes as $id => $name)
+                                        <option data-bg="bg-primary" data-name="{{ $name }}"
+                                            value="{{ $id }}">{{ $name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">Rate</label>
+                                <input type="number" min="0" step="0.01" id="modalRate" class="form-control"
+                                    required>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">Quantity</label>
+                                <input type="number" min="1" id="modalQuantity" value="1"
+                                    class="form-control" required>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">Amount</label>
+                                <input type="number" min="0" step="0.01" id="modalAmount"
+                                    class="form-control" required readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <!--! BEGIN: [modal-footer] !-->
+                    <div class="modal-footer d-flex align-items-center justify-content-end">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Modal logic for purchase details
+        let productIdx = {{ count($purchase->details) }};
+        const products = [];
+
+        // Calculate amount in modal
+        document.getElementById('modalRate').addEventListener('input', function() {
+            const rate = parseFloat(document.getElementById('modalRate').value) || 0;
+            const qty = parseFloat(document.getElementById('modalQuantity').value) || 0;
+            document.getElementById('modalAmount').value = (rate * qty).toFixed(2);
+        });
+        document.getElementById('modalQuantity').addEventListener('input', function() {
+            const rate = parseFloat(document.getElementById('modalRate').value) || 0;
+            const qty = parseFloat(document.getElementById('modalQuantity').value) || 0;
+            document.getElementById('modalAmount').value = (rate * qty).toFixed(2);
+        });
+
+        // Open modal
+        document.addEventListener('DOMContentLoaded', function() {
+            var productModal = document.getElementById('productModal');
+
+            // when modal is about to open
+            productModal.addEventListener('show.bs.modal', function() {
+                // reset form
+                document.getElementById('productForm').reset();
+
+                // clear amount explicitly
+                document.getElementById('modalAmount').value = '';
+
+                // re-init select2 inside modal and reset selection
+                if (window.$ && $.fn.select2) {
+                    $('#modalProduct').val('').trigger('change.select2'); // reset selected option
+                } else {
+                    // fallback: reset native select
+                    document.getElementById('modalProduct').selectedIndex = 0;
+                }
+            });
+        });
+
+        // Add product to table
+
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const weapon_no = document.getElementById('weapon_no').value;
+            const categoryId = document.getElementById('categoryInput').value;
+            const categoryText = document.getElementById('categoryInput').options[document.getElementById(
+                'categoryInput').selectedIndex].getAttribute('data-name');
+            const makeId = document.getElementById('makeInput').value;
+            const makeText = document.getElementById('makeInput').options[document.getElementById(
+                'makeInput').selectedIndex].getAttribute('data-name');
+            const rate = parseFloat(document.getElementById('modalRate').value) || 0;
+            const qty = parseFloat(document.getElementById('modalQuantity').value) || 0;
+            const amount = (rate * qty).toFixed(2);
+            if (!name || !rate || !qty || !weapon_no) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: `Please fill in all fields.`,
+                    showConfirmButton: false,
+                    timer: 2500
+                }).then(() => {
+                    @php
+                        session(['success' => null]);
+                    @endphp
+                });
+                return;
+            };
+            // Add to table
+            const tbody = document.querySelector('#purchaseDetailsTable tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    ${name}
+                    <input type="hidden" name="products[${productIdx}][name]" value="${name}">
+                </td>
+                <td>
+                    ${weapon_no}
+                    <input type="hidden" name="products[${productIdx}][weapon_no]" value="${weapon_no}">
+                </td>
+                <td>
+                    ${categoryText}
+                    <input type="hidden" name="products[${productIdx}][category_id]" value="${categoryId}">
+                </td>
+                <td>
+                    ${makeText}
+                    <input type="hidden" name="products[${productIdx}][make_id]" value="${makeId}">
+                </td>
+                <td>
+                    ${rate}
+                    <input type="hidden" name="products[${productIdx}][rate]" value="${rate}">
+                </td>
+                <td>
+                    ${qty}
+                    <input type="hidden" name="products[${productIdx}][quantity]" value="${qty}">
+                </td>
+                <td>
+                    ${amount}
+                    <input type="hidden" name="products[${productIdx}][amount]" value="${amount}">
+                </td>
+                <td><button type="button" class="btn btn-danger btn-sm remove-product">Remove</button></td>
+            `;
+            tbody.appendChild(row);
+            productIdx++;
+            // Update gross amount
+            updateGrossAmount();
+            // Hide modal
+            bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+        });
+
+        // Remove product row
+
+        document.querySelector('#purchaseDetailsTable tbody').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-product')) {
+                e.target.closest('tr').remove();
+                updateGrossAmount();
+            }
+        });
+
+        function updateGrossAmount() {
+            let sum = 0;
+            document.querySelectorAll('#purchaseDetailsTable tbody tr').forEach(function(row) {
+                const amountCell = row.querySelector('input[name*="[amount]"]');
+                if (amountCell) {
+                    sum += parseFloat(amountCell.value) || 0;
+                }
+            });
+            const grossInput = document.querySelector('[name="gross_amount"]');
+            if (grossInput) grossInput.value = sum.toFixed(2);
+            // Optionally, recalculate amounts
+            calculateAmounts();
+        }
+
+        function calculateAmounts() {
+            var gross = parseFloat(document.querySelector('[name="gross_amount"]').value) || 0;
+            var discountPercInput = document.querySelector('[name="discount_percentage"]');
+            var discountAmtInput = document.querySelector('[name="discount_amount"]');
+            var taxPercInput = document.querySelector('[name="tax_percentage"]');
+            var taxAmtInput = document.querySelector('[name="tax_amount"]');
+            var netAmtInput = document.querySelector('[name="net_amount"]');
+
+            var discountPerc = parseFloat(discountPercInput.value) || 0;
+            var discountAmt = parseFloat(discountAmtInput.value) || 0;
+            var taxPerc = parseFloat(taxPercInput.value) || 0;
+            var taxAmt = parseFloat(taxAmtInput.value) || 0;
+
+            // Determine which field is being edited
+            var active = document.activeElement.name;
+
+            // If gross changes, recalculate discount and tax amounts
+            discountAmt = (gross * discountPerc / 100);
+            discountAmtInput.value = discountAmt ? discountAmt.toFixed(2) : '';
+            taxAmt = ((gross - discountAmt) * taxPerc / 100);
+            taxAmtInput.value = taxAmt ? taxAmt.toFixed(2) : '';
+
+            // If discount percentage changes, update discount amount and tax
+            if (active === "discount_percentage") {
+                discountAmt = (gross * discountPerc / 100);
+                discountAmtInput.value = discountAmt ? discountAmt.toFixed(2) : '';
+                taxAmt = ((gross - discountAmt) * taxPerc / 100);
+                taxAmtInput.value = taxAmt ? taxAmt.toFixed(2) : '';
+            }
+            // If discount amount changes, update discount percentage and tax
+            else if (active === "discount_amount") {
+                discountPerc = gross ? (discountAmt / gross * 100) : 0;
+                discountPercInput.value = discountPerc ? discountPerc.toFixed(2) : '';
+                taxAmt = ((gross - discountAmt) * taxPerc / 100);
+                taxAmtInput.value = taxAmt ? taxAmt.toFixed(2) : '';
+            }
+
+            // If tax percentage changes, update tax amount
+            if (active === "tax_percentage") {
+                taxAmt = ((gross - discountAmt) * taxPerc / 100);
+                taxAmtInput.value = taxAmt ? taxAmt.toFixed(2) : '';
+            }
+            // If tax amount changes, update tax percentage
+            else if (active === "tax_amount") {
+                taxPerc = (gross - discountAmt) ? (taxAmt / (gross - discountAmt) * 100) : 0;
+                taxPercInput.value = taxPerc ? taxPerc.toFixed(2) : '';
+            }
+
+            // Always recalculate net amount
+            var netAmt = gross - discountAmt + taxAmt;
+            netAmtInput.value = netAmt ? netAmt.toFixed(2) : '';
+        }
+
+        // Attach events
+        ['gross_amount', 'discount_percentage', 'discount_amount', 'tax_percentage', 'tax_amount'].forEach(function(name) {
+            document.querySelector('[name="' + name + '"]').addEventListener('input', calculateAmounts);
+        });
+    </script>
+@endsection

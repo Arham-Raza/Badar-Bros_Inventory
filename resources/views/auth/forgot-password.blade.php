@@ -11,7 +11,7 @@
                         </div>
                         <div class="creative-card-body card-body p-sm-5">
                             <h2 class="mb-4 fs-20 fw-bolder">Reset</h2>
-                            <h4 class="mb-2 fs-13 fw-bold">Reset to your username/password</h4>
+                            <h4 class="mb-2 fs-13 fw-bold">Reset your password</h4>
                             <p class="fs-12 fw-medium text-muted">Enter your email and a reset link will sent to you, let's
                                 access our the best recommendation for you.</p>
                             <form method="POST" action="{{ route('password.email') }}">

@@ -11,9 +11,9 @@
                         </div>
                         <div class="creative-card-body card-body p-sm-5">
                             <h2 class="mb-4 fs-20 fw-bolder">Register</h2>
-                            <h4 class="mb-2 fs-13 fw-bold">Manage all your Duralux crm</h4>
-                            <p class="fs-12 fw-medium text-muted">Let's get you all setup, so you can verify your personal
-                                account and begine setting up your profile.</p>
+                            <h4 class="mb-2 fs-13 fw-bold">Register Yourself</h4>
+                            {{-- <p class="fs-12 fw-medium text-muted">Let's get you all setup, so you can verify your personal
+                                account and begine setting up your profile.</p> --}}
                             <form id="formAuthentication" method="POST" action="{{ route('register') }}">
                                 @csrf
                                  <div class="mb-3">

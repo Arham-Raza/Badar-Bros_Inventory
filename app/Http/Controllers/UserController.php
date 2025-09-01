@@ -14,6 +14,13 @@ use Illuminate\Http\RedirectResponse;
     
 class UserController extends Controller
 {
+    function __construct()
+    {
+         $this->middleware('permission:users-list|users-create|users-edit|users-delete', ['only' => ['index','store']]);
+         $this->middleware('permission:users-create', ['only' => ['create','store']]);
+         $this->middleware('permission:users-edit', ['only' => ['edit','update']]);
+         $this->middleware('permission:users-delete', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -21,11 +28,24 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
-        $data = User::latest()->paginate(5);
-  
-        return view('users.index',compact('data'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        $data = User::latest()->paginate(10);
+
+        $totalUsers = User::count();
+        $activeUsers = User::where('status', 1)->count();
+        $inactiveUsers = User::where('status', 0)->count();
+        $newUsers = User::whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->count();
+
+        return view('users.index', compact(
+            'data',
+            'totalUsers',
+            'activeUsers',
+            'inactiveUsers',
+            'newUsers'
+        ))->with('i', ($request->input('page', 1) - 1) * 10);
     }
+   
     
     /**
      * Show the form for creating a new resource.
@@ -101,6 +121,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id): RedirectResponse
     {
+        // dd($request->all());
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$id,

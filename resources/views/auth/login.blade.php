@@ -6,14 +6,14 @@
                 <div class="flex-1 row g-0">
                     <div class="order-1 my-auto col-lg-6 h-100 order-lg-0">
                         <div
-                            class="p-2 bg-white shadow-lg wd-50 rounded-circle position-absolute translate-middle top-50 start-50 d-none d-lg-block">
+                            class="p-2 bg-white shadow-lg wd-70 rounded-circle position-absolute translate-middle top-50 start-50 d-none d-lg-block">
                             <img src="assets/images/logo-abbr.png" alt="" class="img-fluid">
                         </div>
                         <div class="creative-card-body card-body p-sm-5">
                             <h2 class="mb-4 fs-20 fw-bolder">Login</h2>
                             <h4 class="mb-2 fs-13 fw-bold">Login to your account</h4>
-                            <p class="fs-12 fw-medium text-muted">Thank you for get back <strong>Nelel</strong> web
-                                applications, let's access our the best recommendation for you.</p>
+                            {{-- <p class="fs-12 fw-medium text-muted">Thank you for get back <strong>Nelel</strong> web
+                                applications, let's access our the best recommendation for you.</p> --}}
                             <form class="mb-3" method="POST" action="{{ route('login') }}">
                                 @csrf
                                 <div class="mb-4">

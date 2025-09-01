@@ -22,6 +22,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url('assets/vendors/css/vendors.min.css') }}">
     <!--! END: Vendors CSS-->
     <!--! BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ url('assets/vendors/css/select2-theme.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url('assets/css/theme.min.css') }}">
     <!--! END: Custom CSS-->
 </head>
@@ -44,6 +45,7 @@
     <!--! END: Apps Init !-->
     <!--! BEGIN: Theme Customizer  !-->
     <script src="{{ url('assets/js/theme-customizer-init.min.js') }}"></script>
+    <script src="{{ url('assets/vendors/sweetalert2/sweetalert2.js') }}"></script>
     <!--! END: Theme Customizer !-->
     @if (session()->has('success'))
         <script>
