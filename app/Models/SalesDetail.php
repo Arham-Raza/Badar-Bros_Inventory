@@ -30,4 +30,9 @@ class SalesDetail extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function license()
+    {
+        return $this->hasOne(SaleProductLicense::class, 'sale_detail_id');
+    }
 }

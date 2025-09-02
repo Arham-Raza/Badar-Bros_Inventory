@@ -107,8 +107,17 @@
                                                                 name="products[{{ $idx }}][amount]"
                                                                 value="{{ $detail->amount }}">
                                                         </td>
-                                                        <td><button type="button"
+                                                        <td class="gap-2 d-flex">
+                                                            <button type="button"
                                                                 class="btn btn-danger btn-sm remove-product">Remove</button>
+                                                            <button type="button"
+                                                                class="btn btn-info btn-sm print-license-btn"
+                                                                data-sale-detail-id="{{ @$detail->license->saleDetail->id }}"
+                                                                data-product-name="{{ $productName->name ?? '' }}"
+                                                                data-weapon-no="{{ $productName->weapon_no ?? '' }}"
+                                                                data-weapon-type="{{ $productName->category->name ?? '' }}">
+                                                                Print
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -163,6 +172,85 @@
             </div>
         </div>
     </main>
+    <!-- License Print Modal -->
+    <div class="modal fade" id="licensePrintModal" tabindex="-1" aria-labelledby="licensePrintModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="licensePrintForm" method="POST" action="{{ route('sale-product-licenses.store') }}">
+                    @csrf
+                    <input type="hidden" name="sale_detail_id" id="license_sale_detail_id">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="licensePrintModalLabel">Product License Information</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="mb-2 col-md-6">
+                            <label>License Name</label>
+                            <input type="text" class="form-control" name="license_name" required>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label>License No</label>
+                            <input type="text" class="form-control" name="license_no" required>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label>License Issue Date</label>
+                            <input type="date" class="form-control" name="license_issue_date" required>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label>Issued By</label>
+                            <input type="text" class="form-control" name="issued_by" required>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label>CNIC No</label>
+                            <input type="text" class="form-control" name="cnic_no" required>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label>Contact No</label>
+                            <input type="text" class="form-control" name="contact_no" required>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label>Weapon Type</label>
+                            <input type="text" class="form-control" name="weapon_type" id="license_weapon_type"
+                                readonly>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label>Weapon No</label>
+                            <input type="text" class="form-control" name="weapon_no" id="license_weapon_no" readonly>
+                        </div>
+                        <div class="mb-2 d-none col-md-6">
+                            <label>Status</label>
+                            <input type="hidden" value="1" class="form-control" name="status">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save & Print</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.print-license-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var saleDetailId = btn.getAttribute('data-sale-detail-id');
+                
+                // If redirected, open print view
+                if (saleDetailId) {
+                    window.location.href = '{{ url('/sale-product-licenses/print/') }}' + '/' + saleDetailId;
+                    return;
+                } else {
+                    document.getElementById('license_sale_detail_id').value = saleDetailId;
+                    document.getElementById('license_weapon_type').value = btn.getAttribute(
+                        'data-weapon-type');
+                    document.getElementById('license_weapon_no').value = btn.getAttribute('data-weapon-no');
+                    var modal = new bootstrap.Modal(document.getElementById('licensePrintModal'));
+                    modal.show();
+                }
+            });
+        });
+    </script>
     <div class="modal fade-scale" id="productModal" tabindex="-1" aria-labelledby="productModal" aria-hidden="true"
         data-bs-dismiss="modal">
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">

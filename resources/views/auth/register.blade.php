@@ -10,6 +10,9 @@
                             <img src="assets/images/logo-abbr.png" alt="" class="img-fluid">
                         </div>
                         <div class="creative-card-body card-body p-sm-5">
+                            <div class="text-center">
+                            <img src="{{ url('/logo.png') }}" alt="" width="200" class="logo logo-lg" />
+                            </div>
                             <h2 class="mb-4 fs-20 fw-bolder">Register</h2>
                             <h4 class="mb-2 fs-13 fw-bold">Register Yourself</h4>
                             {{-- <p class="fs-12 fw-medium text-muted">Let's get you all setup, so you can verify your personal
@@ -52,8 +55,8 @@
                         </div>
                     </div>
                     <div class="col-lg-6 bg-primary">
-                        <div class="h-100 d-flex align-items-center justify-content-center">
-                            <img src="{{ url('assets/images/auth/auth-user.webp') }}" alt="" class="img-fluid">
+                        <div class="p-5 h-100 d-flex align-items-center justify-content-center">
+                            <img src="{{ url('assets/images/auth/auth-user.webp') }}" alt="" class="img-fluid rounded-circle">
                         </div>
                     </div>
                 </div>

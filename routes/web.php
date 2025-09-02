@@ -14,6 +14,7 @@ use App\Http\Controllers\PurchaseMasterController;
 use App\Http\Controllers\ReceiptsController;
 use App\Http\Controllers\SalesMasterController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\SaleProductLicenseController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -58,6 +59,9 @@ Route::middleware('auth')->group(function () {
     Route::post('receipts/{receipt}/delete', [ReceiptsController::class, 'destroy'])->name('receipts.destroy');
     Route::get('sales/{sale}/receipt-form', [ReceiptsController::class, 'receiptForm'])->name('sales.receiptForm');
     Route::post('sales/{sale}/receipt', [ReceiptsController::class, 'storeReceipt'])->name('sales.pay');
+
+    Route::post('/sale-product-licenses', [SaleProductLicenseController::class, 'store'])->name('sale-product-licenses.store');
+    Route::get('/sale-product-licenses/print/{sale_detail_id}', [SaleProductLicenseController::class, 'print'])->name('sale-product-licenses.print');
 });
 
 require __DIR__ . '/auth.php';

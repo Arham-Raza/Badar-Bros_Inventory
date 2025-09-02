@@ -73,7 +73,7 @@
                             </a>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <a href="javascript:void(0);" class="dropdown-item">
+                        <a href="{{ route('users.edit', auth()->user()->id) }}" class="dropdown-item">
                             <i class="feather-user"></i>
                             <span>Profile Details</span>
                         </a>

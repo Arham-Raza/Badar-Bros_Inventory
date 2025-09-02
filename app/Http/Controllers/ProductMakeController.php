@@ -1,10 +1,13 @@
 <?php
 
+
+
 namespace App\Http\Controllers;
 
 use App\Models\ProductMake;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProductMakeController extends Controller
 {
@@ -15,55 +18,91 @@ class ProductMakeController extends Controller
          $this->middleware('permission:product-makes-edit', ['only' => ['edit','update']]);
          $this->middleware('permission:product-makes-delete', ['only' => ['destroy']]);
     }
+
     public function index()
     {
-        $makes = ProductMake::latest()->paginate(10);
-        return view('product_make.index', compact('makes'));
+        try {
+            $makes = ProductMake::latest()->paginate(10);
+            return view('product_make.index', compact('makes'));
+        } catch (\Throwable $e) {
+            Log::error('ProductMakeController@index error: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Failed to load product makes.');
+        }
     }
 
     public function create()
     {
-        return view('product_make.add');
+        try {
+            return view('product_make.add');
+        } catch (\Throwable $e) {
+            Log::error('ProductMakeController@create error: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Failed to load create make form.');
+        }
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'status' => 'required|boolean',
-        ]);
-        $data = $request->all();
-        $data['created_by'] = Auth::id();
-        $data['updated_by'] = Auth::id();
-        ProductMake::create($data);
-        return redirect()->route('product-makes.index')->with('success', 'Make created successfully.');
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'status' => 'required|boolean',
+            ]);
+            $data = $request->all();
+            $data['created_by'] = Auth::id();
+            $data['updated_by'] = Auth::id();
+            ProductMake::create($data);
+            return redirect()->route('product-makes.index')->with('success', 'Make created successfully.');
+        } catch (\Throwable $e) {
+            Log::error('ProductMakeController@store error: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Failed to create make.');
+        }
     }
 
     public function show(ProductMake $productMake)
     {
-        return view('product_make.show', compact('productMake'));
+        try {
+            return view('product_make.show', compact('productMake'));
+        } catch (\Throwable $e) {
+            Log::error('ProductMakeController@show error: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Failed to load make details.');
+        }
     }
 
     public function edit(ProductMake $productMake)
     {
-        return view('product_make.edit', compact('productMake'));
+        try {
+            return view('product_make.edit', compact('productMake'));
+        } catch (\Throwable $e) {
+            Log::error('ProductMakeController@edit error: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Failed to load make for editing.');
+        }
     }
 
     public function update(Request $request, ProductMake $productMake)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'status' => 'required|boolean',
-        ]);
-        $data = $request->all();
-        $data['updated_by'] = Auth::id();
-        $productMake->update($data);
-        return redirect()->route('product-makes.index')->with('success', 'Make updated successfully.');
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'status' => 'required|boolean',
+            ]);
+            $data = $request->all();
+            $data['updated_by'] = Auth::id();
+            $productMake->update($data);
+            return redirect()->route('product-makes.index')->with('success', 'Make updated successfully.');
+        } catch (\Throwable $e) {
+            Log::error('ProductMakeController@update error: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Failed to update make.');
+        }
     }
 
     public function destroy(ProductMake $productMake)
     {
-        $productMake->delete();
-        return redirect()->route('product-makes.index')->with('success', 'Make deleted successfully.');
+        try {
+            $productMake->delete();
+            return redirect()->route('product-makes.index')->with('success', 'Make deleted successfully.');
+        } catch (\Throwable $e) {
+            Log::error('ProductMakeController@destroy error: ' . $e->getMessage(), ['exception' => $e]);
+            return back()->with('error', 'Failed to delete make.');
+        }
     }
 }

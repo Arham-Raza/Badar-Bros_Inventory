@@ -10,6 +10,9 @@
                             <img src="assets/images/logo-abbr.png" alt="" class="img-fluid">
                         </div>
                         <div class="creative-card-body card-body p-sm-5">
+                            <div class="text-center">
+                            <img src="{{ url('/logo.png') }}" alt="" width="200" class="logo logo-lg" />
+                            </div>
                             <h2 class="mb-4 fs-20 fw-bolder">Login</h2>
                             <h4 class="mb-2 fs-13 fw-bold">Login to your account</h4>
                             {{-- <p class="fs-12 fw-medium text-muted">Thank you for get back <strong>Nelel</strong> web
@@ -41,15 +44,15 @@
                                     <button type="submit" class="btn btn-lg btn-primary w-100">Login</button>
                                 </div>
                             </form>
-                            <div class="mt-3 text-muted">
-                                <span> Don't have an account?</span>
-                                <a href="{{ route('register') }}" class="fw-bold">Create an Account</a>
-                            </div>
+                            <!--<div class="mt-3 text-muted">-->
+                            <!--    <span> Don't have an account?</span>-->
+                            <!--    <a href="{{ route('register') }}" class="fw-bold">Create an Account</a>-->
+                            <!--</div>-->
                         </div>
                     </div>
                     <div class="col-lg-6 bg-primary order-0 order-lg-1">
-                        <div class="h-100 d-flex align-items-center justify-content-center">
-                            <img src="{{ url('assets/images/auth/auth-user.webp') }}" alt="" class="img-fluid">
+                        <div class="p-5 h-100 d-flex align-items-center justify-content-center">
+                            <img src="{{ url('assets/images/auth/auth-user.webp') }}" alt="" class="img-fluid rounded-circle">
                         </div>
                     </div>
                 </div>
