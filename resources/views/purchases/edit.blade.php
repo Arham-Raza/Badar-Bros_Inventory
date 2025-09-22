@@ -11,7 +11,7 @@
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ url('dashboard') }}">Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('purchases.index') }}">Purchases</a></li>
-                        <li class="breadcrumb-item">Create</li>
+                        <li class="breadcrumb-item">Edit</li>
                     </ul>
                 </div>
                 <div class="page-header-right ms-auto">
@@ -26,9 +26,10 @@
             <div class="main-content">
                 <div class="row">
                     <div class="col-lg-12">
-                        <form class="card-body" method="POST" action="{{ route('purchases.update', $purchase->id) }}">
+                        <form class="card-body" method="POST"  enctype="multipart/form-data" action="{{ route('purchases.update', $purchase->id) }}">
                             @csrf
                             @method('PUT')
+
                             <div class="card stretch stretch-full">
                                 <div class="card-body lead-status">
                                     <div class="mb-0 d-flex align-items-center justify-content-between">
@@ -60,6 +61,31 @@
                                             <label class="fw-semibold">Transaction Date:</label>
                                             <input type="date" name="transaction_date" class="form-control" required
                                                 value="{{ $purchase->transaction_date ? date('Y-m-d', strtotime($purchase->transaction_date)) : date('Y-m-d') }}">
+                                        </div>
+                                        <div class="my-2 col-md-3">
+                                            <label class="fw-semibold">Attachments:</label>
+                                            <input type="file" name="attachments[]" class="form-control" multiple
+                                                accept=".pdf,image/jpeg,image/png,image/svg+xml">
+                                            <div id="attachmentPreview" class="mt-2">
+                                                @if(isset($purchase->attachments) && count($purchase->attachments))
+                                                    <div class="row">
+                                                        @foreach($purchase->attachments as $attachment)
+                                                            <div class="mb-2 col-6">
+                                                                @php
+                                                                    $ext = strtolower(pathinfo($attachment->file_path, PATHINFO_EXTENSION));
+                                                                @endphp
+                                                                @if(in_array($ext, ['jpg','jpeg','png','svg']))
+                                                                    <img src="{{ asset('storage/'.$attachment->file_path) }}" alt="Attachment" class="border img-fluid" style="max-height:120px;">
+                                                                @elseif($ext === 'pdf')
+                                                                    <a href="{{ asset('storage/'.$attachment->file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="feather-file-text"></i> View PDF</a>
+                                                                @else
+                                                                    <a href="{{ asset('storage/'.$attachment->file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm">Download</a>
+                                                                @endif
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                     <hr>
@@ -150,8 +176,9 @@
                                         </div>
                                         <div class="my-2 col-md-2">
                                             <label class="fw-semibold">Discount %:</label>
-                                            <input type="number" min="0" step="0.01" name="discount_percentage"
-                                                class="form-control" value="{{ $purchase->discount_percentage }}">
+                                            <input type="number" min="0" step="0.01"
+                                                name="discount_percentage" class="form-control"
+                                                value="{{ $purchase->discount_percentage }}">
                                         </div>
                                         <div class="my-2 col-md-2">
                                             <label class="fw-semibold">Discount Amount:</label>

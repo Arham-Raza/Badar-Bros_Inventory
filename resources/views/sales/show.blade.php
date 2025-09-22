@@ -104,6 +104,10 @@
                                                 <strong>Contact :</strong>
                                                 {{ $sale->customer->mobile1 ?? '' }}<br>
                                             </address>
+                                            <address class="text-muted">
+                                                <strong>Address :</strong>
+                                                {{ $sale->customer->address ?? '' }}<br>
+                                            </address>
                                         </div>
                                         <div class="pt-3 lh-lg pt-sm-0">
                                             <h2 class="fs-4 fw-bold text-primary">
@@ -121,11 +125,6 @@
                                                 <span
                                                     class="text-muted">{{ $sale->transaction_date ? date('d M, Y', strtotime($sale->transaction_date)) : '' }}</span>
                                             </div>
-                                            <div>
-                                                <span class="fw-bold text-dark">Valid Upto:</span>
-                                                <span
-                                                    class="text-muted">{{ $sale->transaction_date ? date('d M, Y', strtotime('+1 year', strtotime($sale->transaction_date))) : '' }}</span>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -138,10 +137,11 @@
                                                 <th>Product</th>
                                                 <th>Weapon No</th>
                                                 <th>Category</th>
-                                                <th>Make</th>
-                                                <th>Rate</th>
+                                                <th>License No</th>
+                                                <th>License Name</th>
+                                                <th>Date</th>
+                                                <th>Valid Upto</th>
                                                 <th>Quantity</th>
-                                                <th>Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -151,66 +151,22 @@
                                                     <td>{{ $detail->product->name ?? '' }}</td>
                                                     <td>{{ $detail->product->weapon_no ?? '' }}</td>
                                                     <td>{{ $detail->product->category->name ?? '' }}</td>
-                                                    <td>{{ $detail->product->make->name ?? '' }}</td>
-                                                    <td>{{ number_format($detail->rate, 2) }}</td>
+                                                    <td>{{ $detail->license->license_no ?? '' }}</td>
+                                                    <td>{{ $detail->license->license_name ?? '' }}</td>
+                                                    <td>{{ $detail->license && $detail->license->license_issue_date ? date('d M, Y', strtotime($detail->license->license_issue_date)) : '' }}</td>
+                                                    <td>{{ $detail->license && $detail->license->valid_upto ? date('d M, Y', strtotime('+1 year', strtotime($detail->license->valid_upto))) : '' }}</td>
                                                     <td>{{ $detail->quantity }}</td>
-                                                    <td class="text-dark fw-semibold">
-                                                        {{ number_format($detail->amount, 2) }}</td>
                                                 </tr>
                                             @endforeach
-                                            <tr>
-                                                <td colspan="7" class="bg-gray-100 fw-semibold text-dark text-lg-end">
-                                                    Gross Amount</td>
-                                                <td class="bg-gray-100 fw-bold text-dark">
-                                                    {{ number_format($sale->gross_amount, 2) }}</td>
-                                            </tr>
-                                            @if ($sale->discount_amount > 0)
-                                                <tr>
-                                                    <td colspan="7"
-                                                        class="bg-gray-100 fw-semibold text-dark text-lg-end">Discount</td>
-                                                    <td class="bg-gray-100 fw-bold text-success">
-                                                        -{{ number_format($sale->discount_amount, 2) }}</td>
-                                                </tr>
-                                            @endif
-                                            @if ($sale->tax_amount > 0)
-                                                <tr>
-                                                    <td colspan="7"
-                                                        class="bg-gray-100 fw-semibold text-dark text-lg-end">Tax</td>
-                                                    <td class="bg-gray-100 fw-bold text-dark">
-                                                        +{{ number_format($sale->tax_amount, 2) }}</td>
-                                                </tr>
-                                            @endif
-                                            <tr>
-                                                <td colspan="7" class="bg-gray-100 fw-semibold text-dark text-lg-end">Net
-                                                    Amount</td>
-                                                <td class="bg-gray-100 fw-bolder text-dark">
-                                                    {{ number_format($sale->net_amount, 2) }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="7" class="bg-gray-100 fw-semibold text-dark text-lg-end">
-                                                    Paid Amount</td>
-                                                <td class="bg-gray-100 fw-bolder text-dark">
-                                                    {{ $sale->receipts ? number_format($sale->receipts->sum('amount'), 2) : '0.00' }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="7" class="bg-gray-100 fw-semibold text-dark text-lg-end">
-                                                    Balance
-                                                    Amount</td>
-                                                <td class="bg-gray-100 fw-bolder text-dark">
-                                                    {{ $sale->receipts ? number_format($sale->net_amount - $sale->receipts->sum('amount'), 2) : '0.00' }}
-                                                </td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <hr class="mt-0 border-dashed">
-                                <div class="">
+                                <div class="pt-5 mt-5">
                                     <div class="p-4 mt-3 justify-content-between d-flex alert alert-soft-warning-message"
                                         role="alert">
-                                        <h5 class="text-nowrap">KARACHI JURISDICTION ONLY <br> E.&o.E</h5>
-                                        <p class="mb-0 text-end" dir="rtl" style="unicode-bidi: bidi-override;">
+                                        <h5 class="ps-3 text-nowrap">KARACHI JURISDICTION ONLY <br> E.&o.E</h5>
+                                        <p class="mb-0 pe-3 text-end" dir="rtl" style="unicode-bidi: bidi-override;">
                                             ١۔ وصول شدہ مال تبدیل یا واپس نہیں ہوگا۔ <br>
                                             ٢۔ سامان خریداری کے ٣ دن کی مدت میں خرابی ہونے پر مرمت کروائی جا سکتی ہے۔ <br>
                                             ٣۔ مرمت کی سہولت میں استعمال میں لائی ہوئی یا استعمال کی نشاندہی موجودہ پر عائد

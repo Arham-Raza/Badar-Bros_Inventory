@@ -33,7 +33,6 @@
                                 <option value="">Select Account</option>
                                 @php
                                     $accounts = \App\Models\Account::whereIn('account_type', ['cash', 'bank'])
-                                        ->where('status', 1)
                                         ->get();
                                 @endphp
                                 @foreach ($accounts as $account)

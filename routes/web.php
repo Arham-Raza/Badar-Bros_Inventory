@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('accounts', AccountController::class);
     Route::resource('purchases', PurchaseMasterController::class);
     Route::resource('sales', SalesMasterController::class);
+       
     // AJAX route for purchase detail modal
     Route::get('purchases/{purchase}/detail', [PaymentsController::class, 'getPurchaseDetailAndTransaction'])->middleware('auth');
     Route::get('sales/{purchase}/detail', [ReceiptsController::class, 'getSaleDetailAndTransaction'])->middleware('auth');

@@ -6,12 +6,12 @@
             <div class="page-header">
                 <div class="page-header-left d-flex align-items-center">
                     <div class="page-header-title">
-                        <h5 class="m-b-10">Purchases</h5>
+                        <h5 class="m-b-10">Sales</h5>
                     </div>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ url('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('sales.index') }}">Purchases</a></li>
-                        <li class="breadcrumb-item">Create</li>
+                        <li class="breadcrumb-item"><a href="{{ route('sales.index') }}">Sales</a></li>
+                        <li class="breadcrumb-item">Edit</li>
                     </ul>
                 </div>
                 <div class="page-header-right ms-auto">
@@ -26,14 +26,14 @@
             <div class="main-content">
                 <div class="row">
                     <div class="col-lg-12">
-                        <form class="card-body" method="POST" action="{{ route('sales.update', $sale->id) }}">
+                        <form class="card-body" method="POST" action="{{ route('sales.update', $sale->id) }}" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="card stretch stretch-full">
                                 <div class="card-body lead-status">
                                     <div class="mb-0 d-flex align-items-center justify-content-between">
                                         <h5 class="mb-0 fw-bold me-4">
-                                            <span class="mb-2 d-block">Add Purchase :</span>
+                                            <span class="mb-2 d-block">Add Sale :</span>
                                         </h5>
                                     </div>
                                     <div class="row">
@@ -60,10 +60,35 @@
                                             <input type="date" name="transaction_date" class="form-control" required
                                                 value="{{ $sale->transaction_date ? date('Y-m-d', strtotime($sale->transaction_date)) : date('Y-m-d') }}">
                                         </div>
+                                        <div class="my-2 col-md-3">
+                                            <label class="fw-semibold">Attachments:</label>
+                                            <input type="file" name="attachments[]" class="form-control" multiple
+                                                accept=".pdf,image/jpeg,image/png,image/svg+xml">
+                                            <div id="attachmentPreview" class="mt-2">
+                                                @if(isset($sale->attachments) && count($sale->attachments))
+                                                    <div class="row">
+                                                        @foreach($sale->attachments as $attachment)
+                                                            <div class="col-6 mb-2">
+                                                                @php
+                                                                    $ext = strtolower(pathinfo($attachment->file_path, PATHINFO_EXTENSION));
+                                                                @endphp
+                                                                @if(in_array($ext, ['jpg','jpeg','png','svg']))
+                                                                    <img src="{{ asset('storage/'.$attachment->file_path) }}" alt="Attachment" class="img-fluid border" style="max-height:120px;">
+                                                                @elseif($ext === 'pdf')
+                                                                    <a href="{{ asset('storage/'.$attachment->file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="feather-file-text"></i> View PDF</a>
+                                                                @else
+                                                                    <a href="{{ asset('storage/'.$attachment->file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm">Download</a>
+                                                                @endif
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                     <hr>
-                                    <h5 class="mb-2">Purchase Details</h5>
-                                    <!-- Purchase Details Table -->
+                                    <h5 class="mb-2">Sale Details</h5>
+                                    <!-- Sale Details Table -->
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="saleDetailsTable">
                                             <thead>
@@ -80,9 +105,10 @@
                                                     <tr>
                                                         <td>
                                                             @php
-                                                                $productName = $products
-                                                                    ->where('id', $detail->product_id)
-                                                                    ->first();
+                                                                $productName = App\Models\Product::where(
+                                                                    'id',
+                                                                    $detail->product_id,
+                                                                )->first();
                                                             @endphp
                                                             {{ $productName->name ?? '' }}
                                                             <input type="hidden"
@@ -97,7 +123,7 @@
                                                         </td>
                                                         <td>
                                                             {{ $detail->quantity }}
-                                                            <input type="hidden"
+                                                            <input type="hidden"s
                                                                 name="products[{{ $idx }}][quantity]"
                                                                 value="{{ $detail->quantity }}">
                                                         </td>
@@ -112,7 +138,8 @@
                                                                 class="btn btn-danger btn-sm remove-product">Remove</button>
                                                             <button type="button"
                                                                 class="btn btn-info btn-sm print-license-btn"
-                                                                data-sale-detail-id="{{ @$detail->license->saleDetail->id }}"
+                                                                data-sale-license-detail-id="{{ @$detail->license->saleDetail->id }}"
+                                                                data-sale-detail-id="{{ @$detail->id }}"
                                                                 data-product-name="{{ $productName->name ?? '' }}"
                                                                 data-weapon-no="{{ $productName->weapon_no ?? '' }}"
                                                                 data-weapon-type="{{ $productName->category->name ?? '' }}">
@@ -137,8 +164,9 @@
                                         </div>
                                         <div class="my-2 col-md-2">
                                             <label class="fw-semibold">Discount %:</label>
-                                            <input type="number" min="0" step="0.01" name="discount_percentage"
-                                                class="form-control" value="{{ $sale->discount_percentage }}">
+                                            <input type="number" min="0" step="0.01"
+                                                name="discount_percentage" class="form-control"
+                                                value="{{ $sale->discount_percentage }}">
                                         </div>
                                         <div class="my-2 col-md-2">
                                             <label class="fw-semibold">Discount Amount:</label>
@@ -198,6 +226,10 @@
                             <input type="date" class="form-control" name="license_issue_date" required>
                         </div>
                         <div class="mb-2 col-md-6">
+                            <label>Valid Upto</label>
+                            <input type="date" class="form-control" name="valid_upto" required>
+                        </div>
+                        <div class="mb-2 col-md-6">
                             <label>Issued By</label>
                             <input type="text" class="form-control" name="issued_by" required>
                         </div>
@@ -234,11 +266,13 @@
     <script>
         document.querySelectorAll('.print-license-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
+                var saleLicenseDetailId = btn.getAttribute('data-sale-license-detail-id');
                 var saleDetailId = btn.getAttribute('data-sale-detail-id');
-                
+
                 // If redirected, open print view
-                if (saleDetailId) {
-                    window.location.href = '{{ url('/sale-product-licenses/print/') }}' + '/' + saleDetailId;
+                if (saleLicenseDetailId) {
+                    window.open('{{ url('/sale-product-licenses/print/') }}' + '/' + saleLicenseDetailId,
+                        '_blank');
                     return;
                 } else {
                     document.getElementById('license_sale_detail_id').value = saleDetailId;

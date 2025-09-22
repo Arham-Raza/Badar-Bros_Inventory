@@ -39,4 +39,9 @@ class PurchaseMaster extends Model
     {
         return $this->hasMany(Transaction::class, 'purchase_id');
     }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
 }

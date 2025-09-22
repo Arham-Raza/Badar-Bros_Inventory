@@ -65,7 +65,7 @@ class SalesMasterController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
+            $rules = [
                 'customer_id' => 'required|exists:accounts,id',
                 'transaction_date' => 'required|date',
                 'transaction_no' => 'required|string',
@@ -79,10 +79,14 @@ class SalesMasterController extends Controller
                 'products.*.rate' => 'required|numeric',
                 'products.*.quantity' => 'required|integer',
                 'products.*.amount' => 'required|numeric',
-            ]);
+            ];
+            if ($request->hasFile('attachments')) {
+                $rules['attachments.*'] = 'file|mimes:pdf,jpeg,png,svg|max:10240';
+            }
+            $request->validate($rules);
 
             $master = SalesMaster::create([
-                ...$request->except('products'),
+                ...$request->except(['products', 'attachments']),
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
             ]);
@@ -96,6 +100,19 @@ class SalesMasterController extends Controller
                 $product = Product::find($detail['product_id']);
                 $product->quantity -= $detail['quantity'];
                 $product->save();
+            }
+            // Handle attachments
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $path = $file->store('attachments');
+                    \App\Models\Attachment::create([
+                        'attachable_type' => SalesMaster::class,
+                        'attachable_id' => $master->id,
+                        'file_path' => $path,
+                        'file_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getClientMimeType(),
+                    ]);
+                }
             }
             return redirect()->route('sales.index')->with('success', 'Sales created successfully.');
         } catch (\Throwable $e) {
@@ -123,7 +140,7 @@ class SalesMasterController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $request->validate([
+            $rules = [
                 'customer_id' => 'required|exists:accounts,id',
                 'transaction_date' => 'required|date',
                 'transaction_no' => 'required|string',
@@ -137,13 +154,17 @@ class SalesMasterController extends Controller
                 'products.*.rate' => 'required|numeric',
                 'products.*.quantity' => 'required|integer',
                 'products.*.amount' => 'required|numeric',
-            ]);
+            ];
+            if ($request->hasFile('attachments')) {
+                $rules['attachments.*'] = 'file|mimes:pdf,jpeg,png,svg|max:10240';
+            }
+            $request->validate($rules);
 
             $master = SalesMaster::findOrFail($id);
 
             // update master
             $master->update([
-                ...$request->except('products'),
+                ...$request->except(['products', 'attachments']),
                 'updated_by' => Auth::id(),
             ]);
 
@@ -165,8 +186,23 @@ class SalesMasterController extends Controller
                     ->decrement('quantity', $detail['quantity']);
             }
 
+            // Handle attachments
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $path = $file->store('attachments');
+                    \App\Models\Attachment::create([
+                        'attachable_type' => SalesMaster::class,
+                        'attachable_id' => $master->id,
+                        'file_path' => $path,
+                        'file_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getClientMimeType(),
+                    ]);
+                }
+            }
+
             return redirect()->route('sales.index')->with('success', 'Sale updated successfully.');
         } catch (\Throwable $e) {
+            dd($e);
             Log::error('SalesMasterController@update error: ' . $e->getMessage(), ['exception' => $e]);
             return back()->with('error', 'Failed to update sale.');
         }

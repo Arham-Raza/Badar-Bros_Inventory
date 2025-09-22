@@ -121,11 +121,6 @@
                                                 <span
                                                     class="text-muted">{{ $purchase->transaction_date ? date('d M, Y', strtotime($purchase->transaction_date)) : '' }}</span>
                                             </div>
-                                            <div>
-                                                <span class="fw-bold text-dark">Valid Upto:</span>
-                                                <span
-                                                    class="text-muted">{{ $purchase->transaction_date ? date('d M, Y', strtotime('+1 year', strtotime($purchase->transaction_date))) : '' }}</span>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -26,8 +26,9 @@
             <div class="main-content">
                 <div class="row">
                     <div class="col-lg-12">
-                        <form class="card-body" method="POST" action="{{ route('purchases.store') }}">
+                        <form class="card-body" method="POST"  enctype="multipart/form-data" action="{{ route('purchases.store') }}">
                             @csrf
+
                             <div class="card stretch stretch-full">
                                 <div class="card-body lead-status">
                                     <div class="mb-0 d-flex align-items-center justify-content-between">
@@ -57,6 +58,12 @@
                                             <label class="fw-semibold">Transaction Date:</label>
                                             <input type="date" name="transaction_date" class="form-control" required
                                                 value="{{ date('Y-m-d') }}">
+                                        </div>
+                                        <div class="my-2 col-md-3">
+                                            <label class="fw-semibold">Attachments:</label>
+                                            <input type="file" name="attachments[]" class="form-control" multiple
+                                                accept=".pdf,image/jpeg,image/png,image/svg+xml">
+                                            <div id="attachmentPreview" class="mt-2"></div>
                                         </div>
                                     </div>
                                     <hr>
@@ -114,8 +121,8 @@
                                         </div>
                                         <div class="my-2 col-md-2">
                                             <label class="fw-semibold">Net Amount:</label>
-                                            <input readonly type="number" min="0" step="0.01" name="net_amount"
-                                                class="form-control">
+                                            <input readonly type="number" min="0" step="0.01"
+                                                name="net_amount" class="form-control">
                                         </div>
                                     </div>
                                 </div>

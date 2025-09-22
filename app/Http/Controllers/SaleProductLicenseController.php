@@ -19,6 +19,7 @@ class SaleProductLicenseController extends Controller
                 'issued_by' => 'required|string',
                 'cnic_no' => 'required|string',
                 'contact_no' => 'required|string',
+                'valid_upto' => 'required|date',
                 'weapon_type' => 'nullable|string',
                 'weapon_no' => 'nullable|string',
                 'status' => 'nullable|string',

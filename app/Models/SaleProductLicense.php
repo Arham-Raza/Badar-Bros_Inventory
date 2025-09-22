@@ -15,6 +15,7 @@ class SaleProductLicense extends Model
         'license_name',
         'license_no',
         'license_issue_date',
+        'valid_upto',
         'issued_by',
         'cnic_no',
         'contact_no',
